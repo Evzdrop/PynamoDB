@@ -150,10 +150,7 @@ class UnicodeAttribute(Attribute):
         """
         if value is None or not len(value):
             return None
-        elif isinstance(value, six.text_type):
-            return value
-        else:
-            return six.u(value)
+        return unicode(value)
 
 
 class JSONAttribute(Attribute):
@@ -171,7 +168,7 @@ class JSONAttribute(Attribute):
         if value is None:
             return None
         encoded = json.dumps(value)
-        return six.u(encoded)
+        return unicode(encoded)
 
     def deserialize(self, value):
         """
@@ -244,7 +241,7 @@ class UTCDateTimeAttribute(Attribute):
         Takes a datetime object and returns a string
         """
         fmt = Delorean(value, timezone=UTC).datetime.strftime(DATETIME_FORMAT)
-        return six.u(fmt)
+        return unicode(fmt)
 
     def deserialize(self, value):
         """
