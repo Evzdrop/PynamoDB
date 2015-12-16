@@ -171,14 +171,11 @@ class JSONAttribute(Attribute):
         if value is None:
             return None
         encoded = json.dumps(value)
-<<<<<<< HEAD
-        return unicode(encoded)
-=======
+
         try:
             return unicode(encoded)
         except NameError:
             return encoded
->>>>>>> jlafon/devel
 
     def deserialize(self, value):
         """
