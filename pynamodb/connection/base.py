@@ -240,7 +240,7 @@ class Connection(object):
             operation_model
         )
         prepared_request = self.client._endpoint.create_request(request_dict, operation_model)
-        response = requests.send(prepared_request)
+        response = self.requests_session.send(prepared_request)
         if response.status_code >= 300:
             data = response.json()
             botocore_expected_format = {"Error": {"Message": data.get("message", ""), "Code": data.get("__type", "")}}
@@ -289,7 +289,9 @@ class Connection(object):
         """
         Return a requests session to execute prepared requests using the same pool
         """
-        return self.session_cls()
+        if self._requests_session is None:
+            self._requests_session = self.session_cls()
+        return self._requests_session
 
     @property
     def client(self):
