@@ -289,7 +289,9 @@ class Connection(object):
         """
         Return a requests session to execute prepared requests using the same pool
         """
-        return self.session_cls()
+        if self._requests_session is None:
+            self._requests_session = self.session_cls()
+        return self._requests_session
 
     @property
     def client(self):
