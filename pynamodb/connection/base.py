@@ -241,7 +241,7 @@ class Connection(object):
         """
         Returns a reference to the dynamodb service
         """
-        return self.session.get_service(SERVICE_NAME)
+        return self.session.create_client(SERVICE_NAME)
 
     @property
     def endpoint(self):
