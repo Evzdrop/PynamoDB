@@ -4,6 +4,7 @@ Lowest level connection
 import logging
 
 import six
+import re
 from botocore.session import get_session
 
 from .util import pythonic
@@ -32,6 +33,12 @@ from pynamodb.constants import (
 log = logging.getLogger(__name__)
 log.addHandler(NullHandler())
 
+first_cap_re = re.compile('(.)([A-Z][a-z]+)')
+all_cap_re = re.compile('([a-z0-9])([A-Z])')
+
+def convert(name):
+    s1 = first_cap_re.sub(r'\1_\2', name)
+    return all_cap_re.sub(r'\1_\2', s1).lower()
 
 class MetaTable(object):
     """
@@ -211,6 +218,7 @@ class Connection(object):
             if pythonic(RETURN_CONSUMED_CAPACITY) not in operation_kwargs:
                 operation_kwargs.update(self.get_consumed_capacity_map(TOTAL))
         self._log_debug(operation_name, operation_kwargs)
+        operation_name = convert(operation_name)
         op = getattr(self.client, operation_name)
         response, data = op(**operation_kwargs)
         if not response.ok:
