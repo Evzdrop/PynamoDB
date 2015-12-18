@@ -153,10 +153,7 @@ class UnicodeAttribute(Attribute):
         """
         if value is None or not len(value):
             return None
-        elif isinstance(value, six.text_type):
-            return value
-        else:
-            return six.u(value)
+        return unicode(value)
 
 
 class JSONAttribute(Attribute):
