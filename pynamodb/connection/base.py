@@ -234,6 +234,8 @@ class Connection(object):
         """
         op = getattr(self.client, pythonic(operation_name))
         response,data = op(**operation_kwargs)
+        print response
+        print data
         if response.status_code >= 300:
             data = response.json()
             botocore_expected_format = {"Error": {"Message": data.get("message", ""), "Code": data.get("__type", "")}}
