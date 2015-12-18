@@ -233,6 +233,7 @@ class Connection(object):
         2. It provides a place to monkey patch requests for unit testing
         """
         op = getattr(self.client, pythonic(operation_name))
+        print operation_kwargs
         data,response = op(**operation_kwargs)
         print response
         print data
