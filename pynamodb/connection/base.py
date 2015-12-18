@@ -233,11 +233,10 @@ class Connection(object):
         2. It provides a place to monkey patch requests for unit testing
         """
         op = getattr(self.client, pythonic(operation_name))
-        response,data = op(**operation_kwargs)
+        data,response = op(**operation_kwargs)
         print response
         print data
         if response.status_code >= 300:
-            data = response.json()
             botocore_expected_format = {"Error": {"Message": data.get("message", ""), "Code": data.get("__type", "")}}
             raise ClientError(botocore_expected_format, operation_name)
         # Simulate botocore's binary attribute handling
