@@ -210,7 +210,6 @@ class Connection(object):
             if pythonic(RETURN_CONSUMED_CAPACITY) not in operation_kwargs:
                 operation_kwargs.update(self.get_consumed_capacity_map(TOTAL))
         self._log_debug(operation_name, operation_kwargs)
-        operation_name = convert(operation_name)
         op = getattr(self.client, operation_name)
         response, data = op(**operation_kwargs)
         if not response.ok:
