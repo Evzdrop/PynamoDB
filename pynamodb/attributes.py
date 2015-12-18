@@ -103,7 +103,10 @@ class BinaryAttribute(Attribute):
         """
         Returns a decoded string from base64
         """
-        return b64decode(value.encode(DEFAULT_ENCODING))
+        try:
+            return b64decode(value.decode(DEFAULT_ENCODING))
+        except AttributeError:
+            return b64decode(value)
 
 
 class BinarySetAttribute(SetMixin, Attribute):
@@ -150,10 +153,7 @@ class UnicodeAttribute(Attribute):
         """
         if value is None or not len(value):
             return None
-        elif isinstance(value, six.text_type):
-            return value
-        else:
-            return six.u(value)
+        return unicode(value)
 
 
 class JSONAttribute(Attribute):
@@ -171,7 +171,7 @@ class JSONAttribute(Attribute):
         if value is None:
             return None
         encoded = json.dumps(value)
-        return six.u(encoded)
+        return unicode(value)
 
     def deserialize(self, value):
         """
@@ -244,7 +244,7 @@ class UTCDateTimeAttribute(Attribute):
         Takes a datetime object and returns a string
         """
         fmt = Delorean(value, timezone=UTC).datetime.strftime(DATETIME_FORMAT)
-        return six.u(fmt)
+        return unicode(value)
 
     def deserialize(self, value):
         """
