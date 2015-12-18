@@ -4,7 +4,6 @@ Lowest level connection
 import logging
 
 import six
-import re
 from botocore.session import get_session
 
 from .util import pythonic
@@ -32,13 +31,6 @@ from pynamodb.constants import (
 
 log = logging.getLogger(__name__)
 log.addHandler(NullHandler())
-
-first_cap_re = re.compile('(.)([A-Z][a-z]+)')
-all_cap_re = re.compile('([a-z0-9])([A-Z])')
-
-def convert(name):
-    s1 = first_cap_re.sub(r'\1_\2', name)
-    return all_cap_re.sub(r'\1_\2', s1).lower()
 
 class MetaTable(object):
     """
