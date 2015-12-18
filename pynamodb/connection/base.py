@@ -5,6 +5,9 @@ from base64 import b64decode
 import logging
 
 import six
+
+from .util import pythonic
+
 from botocore.session import get_session
 from botocore.exceptions import BotoCoreError
 from botocore.client import ClientError
@@ -229,18 +232,12 @@ class Connection(object):
         1. It's faster to avoid using botocore's response parsing
         2. It provides a place to monkey patch requests for unit testing
         """
-        operation_model = self.client._service_model.operation_model(operation_name)
-        request_dict = self.client._convert_to_request_dict(
-            operation_kwargs,
-            operation_model
-        )
-        prepared_request = self.client._endpoint.create_request(request_dict, operation_model)
-        response = self.requests_session.send(prepared_request)
+        op = getattr(self.client, pythonic(operation_name))
+        response,data = op(**operation_kwargs)
         if response.status_code >= 300:
             data = response.json()
             botocore_expected_format = {"Error": {"Message": data.get("message", ""), "Code": data.get("__type", "")}}
             raise ClientError(botocore_expected_format, operation_name)
-        data = response.json()
         # Simulate botocore's binary attribute handling
         if ITEM in data:
             for attr in six.itervalues(data[ITEM]):
