@@ -167,6 +167,7 @@ class Connection(object):
         self._tables = {}
         self.host = host
         self._session = None
+        self._client = None
         if region:
             self.region = region
         else:
@@ -210,7 +211,8 @@ class Connection(object):
             if pythonic(RETURN_CONSUMED_CAPACITY) not in operation_kwargs:
                 operation_kwargs.update(self.get_consumed_capacity_map(TOTAL))
         self._log_debug(operation_name, operation_kwargs)
-        response, data = self.service.get_operation(operation_name).call(self.endpoint, **operation_kwargs)
+        op = getattr(self.client, operation_name)
+        response, data = op(**operation_kwargs)
         if not response.ok:
             self._log_error(operation_name, response)
         if data and CONSUMED_CAPACITY in data:
@@ -237,22 +239,13 @@ class Connection(object):
         return self._session
 
     @property
-    def service(self):
+    def client(self):
         """
-        Returns a reference to the dynamodb service
+        Returns a reference to the dynamodb client
         """
-        return self.session.create_client(SERVICE_NAME)
-
-    @property
-    def endpoint(self):
-        """
-        Returns an endpoint connection to `self.region`
-        """
-        if self.host:
-            end_point = self.service.get_endpoint(self.region, endpoint_url=self.host)
-        else:
-            end_point = self.service.get_endpoint(self.region)
-        return end_point
+        if self._client is None:
+            self._client = self.session.create_client(SERVICE_NAME, self.region, endpoint_url=self.host)
+        return self._client
 
     def get_meta_table(self, table_name, refresh=False):
         """
