@@ -234,40 +234,10 @@ class Connection(object):
         """
         op = getattr(self.client, pythonic(operation_name))
         print operation_kwargs
-        data,response = op(**operation_kwargs)
+        response = op(**operation_kwargs)
         print response
-        print data
-        if response.status_code >= 300:
-            botocore_expected_format = {"Error": {"Message": data.get("message", ""), "Code": data.get("__type", "")}}
-            raise ClientError(botocore_expected_format, operation_name)
-        # Simulate botocore's binary attribute handling
-        if ITEM in data:
-            for attr in six.itervalues(data[ITEM]):
-                _convert_binary(attr)
-        if ITEMS in data:
-            for item in data[ITEMS]:
-                for attr in six.itervalues(item):
-                    _convert_binary(attr)
-        if RESPONSES in data:
-            for item_list in six.itervalues(data[RESPONSES]):
-                for item in item_list:
-                    for attr in six.itervalues(item):
-                        _convert_binary(attr)
-        if LAST_EVALUATED_KEY in data:
-            for attr in six.itervalues(data[LAST_EVALUATED_KEY]):
-                _convert_binary(attr)
-        if UNPROCESSED_KEYS in data:
-            for item_list in six.itervalues(data[UNPROCESSED_KEYS]):
-                for item in item_list:
-                    for attr in six.itervalues(item):
-                        _convert_binary(attr)
-        if UNPROCESSED_ITEMS in data:
-            for item_mapping in six.itervalues(data[UNPROCESSED_ITEMS]):
-                for item in six.itervalues(item_mapping):
-                    for attr in six.itervalues(item):
-                        _convert_binary(attr)
 
-        return data
+        return response
 
     @property
     def session(self):
